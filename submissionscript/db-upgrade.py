@@ -19,14 +19,16 @@ def main():
     latest_db_version = get_latest_version_from_db(db_connection, table_name)
     
     scripts = get_scripts(script_path)
-
+    scripts.sort() # to make sure it starts from low number 
+    
     for script in scripts:
         script_number = int(script[0:2])
         if script_number > latest_db_version:
             outcome = run_script(db_connection, script_path, script)
             if outcome == "success":
                 update_table(db_connection, table_name, script_number)
-            
+            else:
+                sys.exit(1)
      
    
 def run_script(db_connection, script_path, script):
@@ -43,7 +45,6 @@ def run_script(db_connection, script_path, script):
     except mysql.connector.Error as error:
         print(f"ERROR! Unable to run {script} \n {error}")
         return "failed"
-
 
 
 def update_table(db_connection, table_name, script_version):

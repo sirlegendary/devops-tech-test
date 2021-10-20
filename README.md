@@ -96,7 +96,7 @@ docker exec -it exec_container /bin/bash
 Run your script using
 
 ```sh
-/submissionscript/<yourscript.lang> /scripts/ dev mysql_container devopstt 123456`
+python3 submissionscript/db-upgrade.py /scripts/ dev mysql_container devopstt 123456
 ```
 
 You can then run the automated test to check if successful
@@ -104,7 +104,6 @@ You can then run the automated test to check if successful
 ``` sh
 pytest /scripts/db_test.py
 ```
-
 ## Database credentials
 
 The database credentials are set in `docker-compose.yml` and are as follows;
@@ -114,4 +113,23 @@ User: dev
 Password: 123456
 Database name: devopstt
 Database host: mysql_container
+```
+
+## Notes
+
+Error when running `docker-compose up -d`
+```sh
+mysql_container          | 2021-10-20 14:46:20+00:00 [Note] [Entrypoint]: /usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/seeddata.sql
+mysql_container          | /usr/local/bin/docker-entrypoint.sh: line 75: /docker-entrypoint-initdb.d/seeddata.sql: Permission denied
+mysql_container exited with code 1
+```
+
+Solution was to give the `docker-entrypoint-initdb.d` and its content the necessary permission by adding the below to the `Dockerfile.db` file.
+```
+RUN chmod -R 777 /docker-entrypoint-initdb.d/
+```
+
+I also updated the `expecteddbstate` path in the `db_test.py` to be relative.
+```
+/scripts/expecteddbstate
 ```
