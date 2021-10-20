@@ -26,8 +26,7 @@ def main():
             outcome = run_script(db_connection, script_path, script)
             if outcome == "success":
                 update_table(db_connection, table_name, script_number)
-            else:
-                sys.exit(1)
+            
      
    
 def run_script(db_connection, script_path, script):
